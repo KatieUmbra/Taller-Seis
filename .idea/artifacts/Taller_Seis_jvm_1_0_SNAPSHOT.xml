@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Taller-Seis-jvm-1.0-SNAPSHOT">
+    <output-path>$PROJECT_DIR$/build/libs</output-path>
+    <root id="archive" name="Taller-Seis-jvm-1.0-SNAPSHOT.jar">
+      <element id="module-output" name="Taller-Seis.jvmMain" />
+    </root>
+  </artifact>
+</component>
