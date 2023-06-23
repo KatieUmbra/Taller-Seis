@@ -210,11 +210,13 @@ object AddContact {
                             }
                             if (success) {
                                 val verifyExistence = Contact(verifiedName!!, verifiedNumber!!)
-                                if (verifyExistence in contactList) success = false
-                                localErrorList.add("Error! Ese contacto ya existe.")
+                                if (verifyExistence in contactList) {
+                                    success = false
+                                    localErrorList.add("Error! Ese contacto ya existe.")
+                                }
                             }
                             if (success) {
-                                if (contactList.find { it.number === verifiedNumber } != null) {
+                                if (contactList.find { it.number == verifiedNumber } != null) {
                                     success = false
                                     localErrorList.add("Error! Ya existe un contacto con ese numero.")
                                 }

@@ -230,15 +230,19 @@ object UpdateContact {
                             }
                             if (success) {
                                 val verifyExistence = Contact(name, number)
-                                if (verifyExistence in contactList.toMutableList()
-                                        .also { it.remove(selectedContact.value) }
-                                ) success = false
-                                errorList.add("Error! Ese contacto ya existe.")
+                                val newList = contactList.toMutableList()
+                                    .also { it.remove(selectedContact.value) }
+                                if (verifyExistence in newList) {
+                                    success = false
+                                    errorList.add("Error! Ese contacto ya existe.")
+                                }
                             }
                             if (success) {
-                                if (contactList.find { it.number === number } != null) {
+                                val newList = contactList.toMutableList()
+                                    .also { it.remove(selectedContact.value) }
+                                if (newList.find { it.number == number } != null) {
                                     success = false
-                                    errorList.add("Error! Ya existe un contacto con ese numero.")
+                                    errorList.add("Error! Ya existe otro contacto con ese numero.")
                                 }
                             }
                             if (success) {
@@ -304,8 +308,12 @@ object UpdateContact {
                         textAlign = TextAlign.Center,
                         fontSize = 1.1.em,
                         modifier = Modifier.width((confirmationWindowSize.width) * 0.8f),
-                        text = "Esta segurx que desea actualizar este contacto?\n" +
-                                "(una vez hecho no, el contacto anterior no se va a poder recuperar)."
+                        text = if (selectedContact.value == updatedContact) {
+                            "No se han realizado cambios."
+                        } else {
+                            "Esta segurx que desea actualizar este contacto?\n" +
+                                    "(una vez hecho no, el contacto anterior no se va a poder recuperar)."
+                        }
                     )
                     Row(
                         modifier = Modifier.height(confirmationWindowSize.height / 2)
@@ -313,46 +321,60 @@ object UpdateContact {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Box(buttonModifier {
-                            contactList.clear()
-                            contactList.addAll(updateContacts())
-                            val newContactList = Contacts(
-                                contactList
-                                    .toMutableList()
-                                    .also { it.remove(selectedContact.value) }
-                                    .also { it.add(updatedContact) }
-                            )
-                            setContactList(newContactList)
-                            contactList.clear()
-                            contactList.addAll(updateContacts())
-                            contactList.clear()
-                            contactList.addAll(updateContacts())
-                            isConfirmationDialogOpen.value = false
-                            isDialogOpen.value = false
-                            selectedContact.value = null
-                        }
-                            .height((confirmationWindowSize.height) * 0.2f)
-                            .width((confirmationWindowSize.width / 2) * 0.8f),
-                            contentAlignment = Alignment.Center)
-                        {
-                            Label(
-                                text = "Si",
-                                modifier = Modifier,
-                                textAlign = TextAlign.Center,
-                                fontSize = 1.5.em
-                            )
-                        }
-                        Box(buttonModifier { isConfirmationDialogOpen.value = false }
-                            .height((confirmationWindowSize.height) * 0.2f)
-                            .width((confirmationWindowSize.width / 2) * 0.8f),
-                            contentAlignment = Alignment.Center)
-                        {
-                            Label(
-                                text = "No",
-                                modifier = Modifier,
-                                textAlign = TextAlign.Center,
-                                fontSize = 1.5.em
-                            )
+                        if (selectedContact.value == updatedContact) {
+                            Box(buttonModifier { isConfirmationDialogOpen.value = false }
+                                .height((confirmationWindowSize.height) * 0.2f)
+                                .width((confirmationWindowSize.width) * 0.8f),
+                                contentAlignment = Alignment.Center) {
+                                Label(
+                                    text = "Ok",
+                                    modifier = Modifier,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 1.5.em
+                                )
+                            }
+                        } else {
+                            Box(buttonModifier {
+                                contactList.clear()
+                                contactList.addAll(updateContacts())
+                                val newContactList = Contacts(
+                                    contactList
+                                        .toMutableList()
+                                        .also { it.remove(selectedContact.value) }
+                                        .also { it.add(updatedContact) }
+                                )
+                                setContactList(newContactList)
+                                contactList.clear()
+                                contactList.addAll(updateContacts())
+                                contactList.clear()
+                                contactList.addAll(updateContacts())
+                                isConfirmationDialogOpen.value = false
+                                isDialogOpen.value = false
+                                selectedContact.value = null
+                            }
+                                .height((confirmationWindowSize.height) * 0.2f)
+                                .width((confirmationWindowSize.width / 2) * 0.8f),
+                                contentAlignment = Alignment.Center)
+                            {
+                                Label(
+                                    text = "Si",
+                                    modifier = Modifier,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 1.5.em
+                                )
+                            }
+                            Box(buttonModifier { isConfirmationDialogOpen.value = false }
+                                .height((confirmationWindowSize.height) * 0.2f)
+                                .width((confirmationWindowSize.width / 2) * 0.8f),
+                                contentAlignment = Alignment.Center)
+                            {
+                                Label(
+                                    text = "No",
+                                    modifier = Modifier,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 1.5.em
+                                )
+                            }
                         }
                     }
                 }
