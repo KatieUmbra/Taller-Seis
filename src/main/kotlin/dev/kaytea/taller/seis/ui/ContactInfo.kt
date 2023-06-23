@@ -41,11 +41,13 @@ object ContactInfo {
         ) {
             if (selectedUser.value != null) {
                 val color = extractColor(selectedUser.value!!.number)
-                Box(Modifier.height(350.dp).width(350.dp).padding(32.dp)) {
+                Box(
+                    Modifier.height(350.dp).width(350.dp).padding(32.dp)
+                        .background(color, shape = RoundedCornerShape(40.dp))
+                ) {
                     Image(
                         painter = painterResource("person.svg"),
-                        contentDescription = "Image of a person with default attributes",
-                        modifier = Modifier.fillMaxSize().background(color, shape = RoundedCornerShape(40.dp)),
+                        contentDescription = "Image of a person with default attributes"
                     )
                 }
                 val labelModifier = Modifier

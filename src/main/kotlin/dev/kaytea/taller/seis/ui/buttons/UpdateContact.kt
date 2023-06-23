@@ -9,7 +9,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -30,7 +29,7 @@ import io.kanro.compose.jetbrains.expui.control.Label
 import io.kanro.compose.jetbrains.expui.control.TextField
 import io.kanro.compose.jetbrains.expui.theme.DarkTheme
 
-object AddContact {
+object UpdateContact {
 
     private fun buttonModifier(action: () -> Unit): Modifier {
         return Modifier
@@ -39,55 +38,85 @@ object AddContact {
             .background(DarkTheme.Grey6, RoundedCornerShape(10))
     }
 
-    private var errorList: List<String> = listOf()
-    private val errorWindowSize = DpSize(650.dp, 450.dp)
     private val windowSize = DpSize(600.dp, 400.dp)
-    private var dialogOpen = mutableStateOf(false)
-    private var errorDialogOpen = mutableStateOf(false)
+    private val confirmationWindowSize = DpSize(600.dp, 400.dp)
+    private val errorWindowSize = DpSize(650.dp, 450.dp)
+
+    private val errorList = mutableListOf("")
+    private lateinit var updatedContact: Contact
 
     @Composable
-    fun addContact(contactList: SnapshotStateList<Contact>) {
-        var isDialogOpen by remember { dialogOpen }
-        val isErrorDialogOpen by remember { errorDialogOpen }
-        Box(
-            buttonModifier { isDialogOpen = true }.width((900.dp / 4) * 0.8f).height(700.dp / 16),
+    fun updateContact(contactList: SnapshotStateList<Contact>, selectedContact: MutableState<Contact?>) {
+        val isDialogOpen = remember { mutableStateOf(false) }
+        val isConfirmationDialogOpen = remember { mutableStateOf(false) }
+        val isErrorDialogOpen = remember { mutableStateOf(false) }
+        if (isDialogOpen.value) updateContactDialog(
+            contactList,
+            selectedContact,
+            isDialogOpen,
+            isConfirmationDialogOpen,
+            isErrorDialogOpen
+        )
+        if (isConfirmationDialogOpen.value) updateConfirmationDialog(
+            contactList,
+            selectedContact,
+            isConfirmationDialogOpen,
+            isDialogOpen
+        )
+        if (isErrorDialogOpen.value) updateErrorDialog(
+            isErrorDialogOpen
+        )
+        Box(Modifier
+            .padding(2.5.dp)
+            .background(
+                if (selectedContact.value == null) DarkTheme.Grey3 else DarkTheme.Grey6,
+                RoundedCornerShape(10)
+            )
+            .clickable(enabled = selectedContact.value != null) {
+                if (selectedContact.value != null) isDialogOpen.value = true
+            }
+            .width((900.dp / 4) * 0.8f)
+            .height(700.dp / 16),
             contentAlignment = Alignment.Center
         ) {
-            if (isDialogOpen) addContactDialog(contactList)
-            if (isErrorDialogOpen) addErrorDialog()
-            Label("Añadir Contacto", modifier = Modifier.padding(10.dp), fontSize = 1.em)
+            Label("Actualizar Contacto", modifier = Modifier.padding(10.dp), fontSize = 1.em)
         }
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
-    fun addContactDialog(contactList: SnapshotStateList<Contact>) {
-        var isDialogOpen by remember { dialogOpen }
+    fun updateContactDialog(
+        contactList: SnapshotStateList<Contact>,
+        selectedContact: MutableState<Contact?>,
+        isDialogOpen: MutableState<Boolean>,
+        isConfirmationDialogOpen: MutableState<Boolean>,
+        isErrorDialogOpen: MutableState<Boolean>
+    ) {
         Dialog(
-            onCloseRequest = { isDialogOpen = false },
+            title = "Nuevo contacto",
+            resizable = false,
+            onCloseRequest = { isDialogOpen.value = false },
             state = rememberDialogState(
                 position = WindowPosition(Alignment.Center),
                 size = windowSize
             ),
-            title = "Nuevo contacto",
-            resizable = false,
             onKeyEvent = {
                 if (it.key == Key.Escape && it.type == KeyEventType.KeyDown) {
-                    isDialogOpen = false
+                    isDialogOpen.value = false
                 }
                 true
             }
         ) {
             DarkTheme {
                 Column(
-                    Modifier
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
                         .background(DarkTheme.Grey2)
                         .fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    var name by remember { mutableStateOf("") }
-                    var number by remember { mutableStateOf("") }
+                    var name by remember { mutableStateOf(selectedContact.value!!.name) }
+                    var number by remember { mutableStateOf(selectedContact.value!!.number) }
 
                     var nameError by remember { mutableStateOf(false) }
                     var numberError by remember { mutableStateOf(false) }
@@ -104,9 +133,6 @@ object AddContact {
                             .width((windowSize.width / 2) * 0.8f)
                             .height(windowSize.height / 12)
                         val textFieldTitleFontSize = 1.5.em
-                        val textFieldPlaceholderModifier = Modifier
-                            .background(Color.Transparent)
-
                         Column(
                             modifier = Modifier.height((windowSize.height / 4) * 3).width(windowSize.width / 2),
                             verticalArrangement = Arrangement.Center,
@@ -131,7 +157,6 @@ object AddContact {
                                 placeholder = {
                                     Label(
                                         text = "Introduce un nombre",
-                                        modifier = textFieldPlaceholderModifier,
                                         fontSize = 1.em,
                                         color = DarkTheme.Grey4
                                     )
@@ -160,7 +185,6 @@ object AddContact {
                                 placeholder = {
                                     Label(
                                         text = "Introduce un numero de teléfono",
-                                        modifier = textFieldPlaceholderModifier,
                                         fontSize = 1.em,
                                         color = DarkTheme.Grey4
                                     )
@@ -178,18 +202,14 @@ object AddContact {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        var isErrorDialogOpen by remember { errorDialogOpen }
                         Box(buttonModifier {
                             contactList.clear()
                             contactList.addAll(updateContacts())
-                            val localErrorList = mutableListOf<String>()
+                            errorList.clear()
                             var success = true
-
-                            val verifiedName = Contact.verifyName(name)
-                            val verifiedNumber = Contact.verifyNumber(number)
-                            if (verifiedName.isNullOrEmpty()) {
+                            if (nameError) {
                                 success = false
-                                localErrorList.add(
+                                errorList.add(
                                     "Error! El nombre tiene mal formato\n" +
                                             "  • El nombre no puede ni empezar ni terminar en espacio.\n" +
                                             "  • El nombre no puede tener dos espacios consecutivos.\n" +
@@ -199,9 +219,9 @@ object AddContact {
                                             "    solo letras o los siguientes caracteres: '-' '_' ' '"
                                 )
                             }
-                            if (verifiedNumber.isNullOrEmpty()) {
+                            if (numberError) {
                                 success = false
-                                localErrorList.add(
+                                errorList.add(
                                     "Error! El numero tiene mal formato\n" +
                                             "  • El numero solo puede tener números de 0 a 9.\n" +
                                             "  • El numero debe ser de exactamente 10 dígitos.\n" +
@@ -209,30 +229,26 @@ object AddContact {
                                 )
                             }
                             if (success) {
-                                val verifyExistence = Contact(verifiedName!!, verifiedNumber!!)
-                                if (verifyExistence in contactList) success = false
-                                localErrorList.add("Error! Ese contacto ya existe.")
+                                val verifyExistence = Contact(name, number)
+                                if (verifyExistence in contactList.toMutableList()
+                                        .also { it.remove(selectedContact.value) }
+                                ) success = false
+                                errorList.add("Error! Ese contacto ya existe.")
                             }
                             if (success) {
-                                if (contactList.find { it.number === verifiedNumber } != null) {
+                                if (contactList.find { it.number === number } != null) {
                                     success = false
-                                    localErrorList.add("Error! Ya existe un contacto con ese numero.")
+                                    errorList.add("Error! Ya existe un contacto con ese numero.")
                                 }
                             }
                             if (success) {
-                                val newContactList = Contacts(
-                                    contactList
-                                        .toMutableList()
-                                        .also { it.add(Contact(verifiedName!!, verifiedNumber!!)) }
-                                )
-                                setContactList(newContactList)
-                                contactList.clear()
-                                contactList.addAll(updateContacts())
-                                isDialogOpen = false
+                                updatedContact = Contact(name, number)
+                                isConfirmationDialogOpen.value = true
                             } else {
-                                errorList = localErrorList
-                                isErrorDialogOpen = true
+                                isErrorDialogOpen.value = true
                             }
+                            contactList.clear()
+                            contactList.addAll(updateContacts())
                         }
                             .width((windowSize.width / 2) * 0.8f)
                             .fillMaxHeight(),
@@ -240,7 +256,7 @@ object AddContact {
                             Label("Submit", fontSize = 1.em, textAlign = TextAlign.Center)
                         }
                         Box(buttonModifier {
-                            isDialogOpen = false
+                            isDialogOpen.value = false
                         }
                             .width((windowSize.width / 2) * 0.8f)
                             .fillMaxHeight(),
@@ -255,16 +271,109 @@ object AddContact {
 
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
-    fun addErrorDialog() {
-        var isDialogOpen by remember { errorDialogOpen }
+    fun updateConfirmationDialog(
+        contactList: SnapshotStateList<Contact>,
+        selectedContact: MutableState<Contact?>,
+        isConfirmationDialogOpen: MutableState<Boolean>,
+        isDialogOpen: MutableState<Boolean>
+    ) {
         Dialog(
-            onCloseRequest = { isDialogOpen = false },
+            title = "Eliminar Contacto",
+            resizable = false,
+            onCloseRequest = { isConfirmationDialogOpen.value = false },
+            state = rememberDialogState(
+                position = WindowPosition(Alignment.Center),
+                size = confirmationWindowSize
+            ),
+            onKeyEvent = {
+                if (it.key == Key.Escape && it.type == KeyEventType.KeyDown && isConfirmationDialogOpen.value) {
+                    isConfirmationDialogOpen.value = false
+                }
+                false
+            }
+        ) {
+            DarkTheme {
+                Column(
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .background(DarkTheme.Grey2)
+                        .fillMaxSize()
+                ) {
+                    Label(
+                        textAlign = TextAlign.Center,
+                        fontSize = 1.1.em,
+                        modifier = Modifier.width((confirmationWindowSize.width) * 0.8f),
+                        text = "Esta segurx que desea actualizar este contacto?\n" +
+                                "(una vez hecho no, el contacto anterior no se va a poder recuperar)."
+                    )
+                    Row(
+                        modifier = Modifier.height(confirmationWindowSize.height / 2)
+                            .width(confirmationWindowSize.width),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Box(buttonModifier {
+                            contactList.clear()
+                            contactList.addAll(updateContacts())
+                            val newContactList = Contacts(
+                                contactList
+                                    .toMutableList()
+                                    .also { it.remove(selectedContact.value) }
+                                    .also { it.add(updatedContact) }
+                            )
+                            setContactList(newContactList)
+                            contactList.clear()
+                            contactList.addAll(updateContacts())
+                            contactList.clear()
+                            contactList.addAll(updateContacts())
+                            isConfirmationDialogOpen.value = false
+                            isDialogOpen.value = false
+                            selectedContact.value = null
+                        }
+                            .height((confirmationWindowSize.height) * 0.2f)
+                            .width((confirmationWindowSize.width / 2) * 0.8f),
+                            contentAlignment = Alignment.Center)
+                        {
+                            Label(
+                                text = "Si",
+                                modifier = Modifier,
+                                textAlign = TextAlign.Center,
+                                fontSize = 1.5.em
+                            )
+                        }
+                        Box(buttonModifier { isConfirmationDialogOpen.value = false }
+                            .height((confirmationWindowSize.height) * 0.2f)
+                            .width((confirmationWindowSize.width / 2) * 0.8f),
+                            contentAlignment = Alignment.Center)
+                        {
+                            Label(
+                                text = "No",
+                                modifier = Modifier,
+                                textAlign = TextAlign.Center,
+                                fontSize = 1.5.em
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    @Composable
+    fun updateErrorDialog(
+        isErrorDialogOpen: MutableState<Boolean>
+    ) {
+        Dialog(
+            onCloseRequest = { isErrorDialogOpen.value = false },
             state = rememberDialogState(
                 position = WindowPosition(Alignment.Center),
                 size = errorWindowSize
             ),
             onKeyEvent = {
-                if (it.key == Key.Escape && it.type == KeyEventType.KeyDown && isDialogOpen) isDialogOpen = false
+                if (it.key == Key.Escape && it.type == KeyEventType.KeyDown && isErrorDialogOpen.value)
+                    isErrorDialogOpen.value = false
                 false
             }
         ) {
@@ -283,7 +392,7 @@ object AddContact {
                 }
                 Box {
                     Box(
-                        modifier = buttonModifier { isDialogOpen = false }
+                        modifier = buttonModifier { isErrorDialogOpen.value = false }
                             .width(errorWindowSize.width * 0.6f)
                             .height(errorWindowSize.height * 0.15f)
                             .align(Alignment.Center),
