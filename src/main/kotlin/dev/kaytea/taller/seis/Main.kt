@@ -78,8 +78,8 @@ fun main() = application {
         state = rememberWindowState(size = DpSize(900.dp, 700.dp)),
         onCloseRequest = { exitApplication() },
         theme = DarkTheme,
-        showTitle = true,
-        alwaysOnTop = true,
+        showTitle = false,
+        alwaysOnTop = false,
         onKeyEvent = {
             if (it.key == Key.Escape && it.type == KeyEventType.KeyDown) {
                 selectedContact.value = null
