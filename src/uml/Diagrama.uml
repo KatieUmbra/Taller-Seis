@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>/home/Katie/Development/College/Taller-Seis/src/main/kotlin/dev/kaytea/taller/seis/Main.kt</OriginalElement>
+  <nodes>
+    <node x="1200.9778504672895" y="-90.62917222963955">dev.kaytea.taller.seis.io.Contact</node>
+    <node x="1513.6685580774367" y="-26.148170894526004">dev.kaytea.taller.seis.io.Contact.Companion</node>
+    <node x="507.6685580774367" y="157.0">dev.kaytea.taller.seis.ui.buttons.UpdateContact</node>
+    <node x="712.8943865895263" y="-76.01468624833092">dev.kaytea.taller.seis.io.Contacts</node>
+    <node x="1373.0719305740986" y="-310.2583444592791">dev.kaytea.taller.seis.ui.buttons.AddContact</node>
+    <node x="781.5026702269693" y="-454.21361815754335">dev.kaytea.taller.seis.ui.buttons.DeleteContact</node>
+    <node x="481.97129506007946" y="-556.275033377837">dev.kaytea.taller.seis.io.OutputKt</node>
+    <node x="504.48571428571387" y="-49.01468624833092">dev.kaytea.taller.seis.io.Setup</node>
+    <node x="481.97129506007946" y="-441.21361815754335">dev.kaytea.taller.seis.io.SetupKt</node>
+    <node x="428.0143124165554" y="-194.65628838451255">dev.kaytea.taller.seis.ui.ContactInfo</node>
+    <node x="858.8600133511351" y="-310.2583444592791">dev.kaytea.taller.seis.io.InputKt</node>
+    <node x="916.5026702269694" y="-598.1688918558076">dev.kaytea.taller.seis.ui.ContactList</node>
+    <node x="422.5143124165554" y="40.99265687583454">dev.kaytea.taller.seis.MainKt</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="dev.kaytea.taller.seis.ui.buttons.DeleteContact" target="dev.kaytea.taller.seis.io.Contacts" relationship="CREATE">
+      <point x="3.297730306712765E-4" y="57.49961815754335" />
+      <point x="1217.503" y="-220.0" />
+      <point x="917.5" y="-220.0" />
+      <point x="917.5" y="-129.0" />
+      <point x="847.394" y="-129.0" />
+      <point x="-3.865895263288621E-4" y="-45.00031375166908" />
+    </edge>
+    <edge source="dev.kaytea.taller.seis.ui.buttons.UpdateContact" target="dev.kaytea.taller.seis.io.Contacts" relationship="CREATE">
+      <point x="4.4192256336827995E-4" y="-83.5" />
+      <point x="1154.669" y="-129.0" />
+      <point x="847.394" y="-129.0" />
+      <point x="-3.865895263288621E-4" y="-45.00031375166908" />
+    </edge>
+    <edge source="dev.kaytea.taller.seis.ui.buttons.UpdateContact" target="dev.kaytea.taller.seis.io.Contact" relationship="TO_ONE">
+      <point x="-142.66855807743673" y="-83.5" />
+      <point x="1012.0" y="62.0" />
+      <point x="1016.36" y="62.0" />
+      <point x="1016.36" y="-6.129" />
+      <point x="-143.99985046728943" y="1.7222963955099146E-4" />
+    </edge>
+    <edge source="dev.kaytea.taller.seis.ui.buttons.AddContact" target="dev.kaytea.taller.seis.io.Contacts" relationship="CREATE">
+      <point x="6.942590130165627E-5" y="70.50034445927909" />
+      <point x="1613.072" y="-129.0" />
+      <point x="847.394" y="-129.0" />
+      <point x="-3.865895263288621E-4" y="-45.00031375166908" />
+    </edge>
+    <edge source="dev.kaytea.taller.seis.io.Contacts" target="dev.kaytea.taller.seis.io.Contact" relationship="TO_MANY">
+      <point x="-3.865895263288621E-4" y="44.99968624833092" />
+      <point x="847.394" y="62.0" />
+      <point x="1016.36" y="62.0" />
+      <point x="1016.36" y="-6.129" />
+      <point x="-143.99985046728943" y="1.7222963955099146E-4" />
+    </edge>
+    <edge source="dev.kaytea.taller.seis.io.InputKt" target="dev.kaytea.taller.seis.io.Contacts" relationship="CREATE">
+      <point x="-1.335113506684138E-5" y="31.50034445927909" />
+      <point x="1016.36" y="-220.0" />
+      <point x="917.5" y="-220.0" />
+      <point x="917.5" y="-129.0" />
+      <point x="847.394" y="-129.0" />
+      <point x="-3.865895263288621E-4" y="-45.00031375166908" />
+    </edge>
+    <edge source="dev.kaytea.taller.seis.ui.buttons.UpdateContact" target="dev.kaytea.taller.seis.io.Contact" relationship="CREATE">
+      <point x="53.80944192256334" y="-83.5" />
+      <point x="1208.478" y="95.871" />
+      <point x="1178.0" y="95.871" />
+      <point x="1178.0" y="-45.0" />
+      <point x="-143.99985046728943" y="-38.87082777036045" />
+    </edge>
+    <edge source="dev.kaytea.taller.seis.io.Contact.Companion" target="dev.kaytea.taller.seis.io.Contact" relationship="INNER_CLASS">
+      <point x="-144.0" y="-24.481001335113547" />
+      <point x="144.0" y="0.0" />
+    </edge>
+    <edge source="dev.kaytea.taller.seis.ui.buttons.AddContact" target="dev.kaytea.taller.seis.io.Contact" relationship="CREATE">
+      <point x="-239.9999305740987" y="34.7583444592791" />
+      <point x="1178.0" y="-205.0" />
+      <point x="1178.0" y="-45.0" />
+      <point x="-143.99985046728943" y="-38.87082777036045" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.8716861081654295" showDependencies="true" x="1148.0" y="-127.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Inner Classes</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

@@ -1,0 +1,40 @@
+@startuml
+!theme toy from ./
+skinparam actorStyle awesome
+left to right direction
+:usuario:
+:OS: <<Intermediario>>
+:fileSystem:
+package Application {
+    (leer)
+    (crear)
+    (actualizar)
+    (eliminar)
+    (UI)
+    package Internal {
+        (serializacion)
+        (deserializacion)
+        (verificacion)
+        package Java {
+            (jvm)
+        }
+    }
+}
+usuario -left-> (UI)
+(UI) -right-> usuario
+(UI) -.> (eliminar)
+(UI) -.> (crear)
+(UI) -.> (actualizar)
+(leer) -> (UI)
+(jvm) -> (deserializacion)
+(deserializacion) ..> (leer)
+(serializacion) --> (jvm)
+(jvm) .-down-> OS :Escribe
+(verificacion) -> (serializacion)
+(crear) --> (verificacion)
+(eliminar) --> (verificacion)
+(actualizar) --> (verificacion)
+OS -down-> (jvm) :Lee
+OS .down.> fileSystem :Actualiza datos
+fileSystem -> OS :Da valores guardados
+@enduml
